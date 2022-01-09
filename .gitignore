@@ -1,0 +1,17 @@
+*.gem
+*.swp
+*_flymake.*
+*~
+/**/.*
+/*.gemspec
+/cache/
+/coverage/
+/doc/
+/vendor/
+!/.codeclimate.yml
+!/.env
+!/.gitignore
+!/.rspec
+!/.rubocop.yml
+!/.solargraph.yml
+!/.yardopts
