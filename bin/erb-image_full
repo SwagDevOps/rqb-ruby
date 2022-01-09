@@ -6,6 +6,7 @@ require_relative '../lib'
 # Create markup for all full-page image.
 #
 # SVG files are converted to PDF (on the fly).
+# Template SHOULD use ``svg2pdf`` (from TeX).
 #
 # Argument is a file-path without extension.
 #
@@ -14,6 +15,8 @@ require_relative '../lib'
 # ```sh
 # erb-image_full images/sample
 # ```
+#
+# @todo use svg2pdf from the main program instead of depending on erb template.
 class App < ErbApp
   self.file = __FILE__
 
