@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib'
+
+# Create markup for all full-page image.
+#
+# SVG files are converted to PDF (on the fly).
+#
+# Argument is a file-path without extension.
+#
+# Sample of use:
+#
+# ```sh
+# erb-image_full images/sample
+# ```
+class App < ErbApp
+  self.file = __FILE__
+
+  def output_basepath
+    # noinspection RubyYardReturnMatch, RubyMismatchedReturnType
+    variables.fetch(:param)
+  end
+
+  def variables
+    filepath.to_s.yield_self do |fp|
+      {
+        filepath: fp,
+        param: Pathname.new(fp).dirname.join(File.basename(fp, '.*')).to_s,
+        image: /\.svg$/.match?(fp) ? fp.gsub(/\.svg$/, '.pdf') : fp,
+        converted: /\.svg$/.match?(fp)
+      }
+    end
+  end
+
+  protected
+
+  # @return [Pathname]
+  def filepath
+    arguments.fetch(0).then do |arg|
+      Pathname.new("#{arg}.svg").then { |fp| return fp.realpath.freeze if fp.file? }
+
+      Dir.glob("#{arg}.*").then { |files| Pathname.new(files.fetch(0)).realpath.freeze }
+    end
+  end
+end
+
+App.new.call if __FILE__ == $PROGRAM_NAME

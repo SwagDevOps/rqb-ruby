@@ -1,0 +1,11 @@
+%! suppress = MissingImport
+<% if converted %>
+\svgconv(<%= param %>)
+<% end %>
+
+\begin{figure}[p]
+  \vspace*{-0cm}
+    \makebox[\linewidth]{
+      \centerline{\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{<%= image %>}
+    }}
+\end{figure}
