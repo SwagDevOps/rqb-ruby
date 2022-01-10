@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib'
+require_relative '../lib/rqb'
 
 # Create markup for all full-page image.
 #
@@ -17,7 +17,7 @@ require_relative '../lib'
 # ```
 #
 # @todo use svg2pdf from the main program instead of depending on erb template.
-class App < ErbApp
+class App < Rqb::ErbApp
   self.file = __FILE__
 
   def output_basepath

@@ -6,10 +6,10 @@
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-require_relative '../lib'
+require_relative '../rqb'
 
 # @see https://github.com/SwagDevOps/stibium-bundled
-module Bundleable
+module Rqb::Bundleable
   autoload(:Pathname, 'pathname')
   autoload(:RbConfig, 'rbconfig')
 
@@ -27,8 +27,8 @@ module Bundleable
 
     def included(othermod)
       # noinspection RubyNilAnalysis, RubyResolve
-      Pathname.new(caller_locations.fetch(0).path).dirname.join('..').expand_path.freeze.yield_self do |basedir|
-        loader.call(basedir)
+      Pathname.new(caller_locations.fetch(0).path).dirname.join('../..').expand_path.freeze.yield_self do |basedir|
+        loader.call(basedir).tap { |v| require('stibium/bundled') if v.nil? }
       ensure
         othermod
           .__send__(:include, ::Stibium::Bundled)
@@ -48,6 +48,8 @@ module Bundleable
     # @return [Proc]
     def loader
       # @type [String, Pathname] basedir
+      #
+      # @return [Pathname, nil]
       lambda do |basedir|
         [
           [RUBY_ENGINE, RbConfig::CONFIG.fetch('ruby_version'), 'bundler/gems/*/stibium-bundled.gemspec'],

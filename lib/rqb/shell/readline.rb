@@ -9,7 +9,7 @@ require_relative '../shell'
 #   stream.each_line { |line| puts line } if kwargs[:source]&.eql?(:stdout)
 # end
 # ```
-class Shell::Readline < Shell::Command
+class Rqb::Shell::Readline < Rqb::Shell::Command
   autoload(:Open3, 'open3')
 
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../lib'
+require_relative '../rqb'
 
 # Shell utilities
-module Shell
+module Rqb::Shell
   {
     Chalk: :chalk,
     Command: :command,

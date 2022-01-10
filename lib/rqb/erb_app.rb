@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-autoload(:ERB, 'erb')
-autoload(:Pathname, 'pathname')
-autoload(:FileUtils, 'fileutils')
+require_relative '../rqb'
 
 # @abstract
-class ErbApp < CliApp
+class Rqb::ErbApp < Rqb::CliApp
+  autoload(:ERB, 'erb')
+  autoload(:Pathname, 'pathname')
+  autoload(:FileUtils, 'fileutils')
+
   # @return [Array<String>]
   attr_reader :arguments
 

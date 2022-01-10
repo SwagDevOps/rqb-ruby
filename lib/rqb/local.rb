@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../lib'
+require_relative '../rqb'
 
 # Module related to rake local tasks.
-module Local
+module Rqb::Local
   "#{__dir__}/local".tap do |path|
     {
       Docker: 'docker',

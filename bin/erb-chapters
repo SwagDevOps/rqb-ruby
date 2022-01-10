@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib'
+require_relative '../lib/rqb'
 
 # Sample of use:
 #
@@ -10,7 +10,7 @@ require_relative '../lib'
 # ```
 #
 # Given filepath is a filepath without extension (extension will be ``yml``)
-class App < ErbApp
+class App < Rqb::ErbApp
   self.file = __FILE__
 
   autoload(:YAML, 'yaml')

@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib'
+require_relative '../lib/rqb'
 
 # Wrapper build on top fo convert
 #
 # Output is cached and compared by original file md5sum.
-class Svg2Pdf < CliApp
+class Svg2Pdf < Rqb::CliApp
   autoload(:Digest, 'digest')
   autoload(:Pathname, 'pathname')
   autoload(:FileUtils, 'fileutils')

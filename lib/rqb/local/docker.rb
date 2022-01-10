@@ -3,7 +3,7 @@
 require_relative '../local'
 
 # Local to docker communication methods.
-module Local::Docker
+module Rqb::Local::Docker
   class << self
     def user
       shell.user
@@ -42,13 +42,13 @@ module Local::Docker
         '-e', "OUTPUT_NAME=#{tex.output_name}",
         '-e', "TMPDIR=/tmp/u#{user.uid}",
         '-e', 'PATH=/workdir/ruby/bin:/usr/local/bin:/usr/bin:/bin',
-        '-v', "#{Dir.pwd}/.tmp:/tmp/u#{user.uid}",
-        '-v', "#{Dir.pwd}/ruby:/workdir/ruby:ro",
-        '-v', "#{Dir.pwd}/vendor/bundle:/workdir/vendor/bundle:ro",
-        '-v', "#{Dir.pwd}/.bundle:/workdir/.bundle:ro",
-        '-v', "#{Dir.pwd}/src:/workdir/src:ro",
-        '-v', "#{Dir.pwd}/out:/workdir/out",
-        '-v', "#{Dir.pwd}/tmp:/workdir/tmp",
+        '-v', "#{shell.pwd.join('.tmp').realpath}:/tmp/u#{user.uid}",
+        '-v', "#{shell.pwd.join('ruby').realpath}:/workdir/ruby:ro",
+        '-v', "#{shell.pwd.join('vendor/bundle').realpath}:/workdir/vendor/bundle:ro",
+        '-v', "#{shell.pwd.join('.bundle').realpath}:/workdir/.bundle:ro",
+        '-v', "#{shell.pwd.join('src').realpath}:/workdir/src:ro",
+        '-v', "#{shell.pwd.join('out').realpath}:/workdir/out",
+        '-v', "#{shell.pwd.join('tmp').realpath}:/workdir/tmp",
         '-w', "/workdir/#{path}",
         image
       ].concat(command))
@@ -73,11 +73,11 @@ module Local::Docker
     end
 
     def shell
-      ::Local::Shell
+      ::Rqb::Local::Shell
     end
 
     def tex
-      ::Local::Tex
+      ::Rqb::Local::Tex
     end
   end
 end

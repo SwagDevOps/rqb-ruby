@@ -3,7 +3,7 @@
 require_relative '../shell'
 
 # Colorize shell outputs.
-class Shell::Chalk
+class Rqb::Shell::Chalk
   FG_COLORS = {
     default: 38,
     black: 30,

@@ -3,7 +3,7 @@
 require_relative '../local'
 
 # Tex project related methods.
-module Local::Tex
+module Rqb::Local::Tex
   class << self
     def project_name
       ENV.fetch('TEX_PROJECT_NAME')

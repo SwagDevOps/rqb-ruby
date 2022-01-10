@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
+require_relative '../rqb'
+
 # Represent a CLI app
 #
 # able to basically parse given arguments (<code>ARGV</code>),
 # as arguments and options with YAML syntax support.
 #
 # @abstract
-class CliApp
+class Rqb::CliApp
   autoload(:YAML, 'yaml')
 
   # @return [Array<Object>]

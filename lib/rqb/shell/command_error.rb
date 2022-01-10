@@ -3,7 +3,7 @@
 require_relative '../shell'
 
 # Describe a shell error (comand execution without success return code).
-class Shell::CommandError < ::RuntimeError
+class Rqb::Shell::CommandError < ::RuntimeError
   autoload(:Shellwords, 'shellwords')
 
   # @param [Array<String>] command

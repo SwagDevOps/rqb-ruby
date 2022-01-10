@@ -15,7 +15,7 @@ require 'kamaze/project'
   'sources:license',
 ].then do |tasks|
   Kamaze.project do |project|
-    project.subject = Kernel
+    project.subject = Rqb
     project.name = 'rqb'
     project.tasks = tasks
   end.load!

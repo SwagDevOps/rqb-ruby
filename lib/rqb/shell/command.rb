@@ -3,7 +3,7 @@
 require_relative '../shell'
 
 # @abstract
-class Shell::Command
+class Rqb::Shell::Command
   autoload(:Shellwords, 'shellwords')
 
   # Mutex used to ensure atomicity on system calls
@@ -18,7 +18,7 @@ class Shell::Command
       @silent = @silent.nil? ? false : @silent
       @arguments = arguments.clone.map(&:freeze).freeze
       @env = env.clone.map { |k, v| [k.freeze, v.freeze] }.to_h.freeze
-    end.freeze
+    end
   end
 
   # @return [Boolean]
@@ -47,8 +47,8 @@ class Shell::Command
     inner_call do
       SYSTEM_LOCK.synchronize do
         -> { $CHILD_STATUS }.tap do |stat|
-          Kernel.system(*system_args).tap do |res|
-            raise Shell::CommandError.new(self.to_a, status: stat.call) unless res
+          ::Kernel.system(*system_args).tap do |res|
+            raise ::Rqb::Shell::CommandError.new(self.to_a, status: stat.call) unless res
           end
         end.call
       end
@@ -65,7 +65,7 @@ class Shell::Command
   end
 
   def warn(message)
-    Kernel.warn(message)
+    ::Kernel.warn(message)
   end
 
   def inner_call(&block)
