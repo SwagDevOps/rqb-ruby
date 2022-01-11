@@ -51,7 +51,7 @@ module Rqb::Local::Docker
         '-v', "#{shell.pwd.join('tmp').realpath}:/workdir/tmp",
         '-w', "/workdir/#{path}",
         image
-      ].concat(command))
+      ].compact.concat(command))
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
