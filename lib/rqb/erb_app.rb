@@ -84,9 +84,7 @@ class Rqb::ErbApp < Rqb::CliApp
     { env: ENV.to_h }.merge(variables).then do |vars|
       Struct.new(*vars.keys).new(*vars.values).yield_self do |renderer|
         # @see https://github.com/rubocop/rubocop/pull/5845#issuecomment-1008348049
-        # rubocop:disable Lint/ErbNewArguments
-        ERB.new(template.read, 0, trim_mode: '>').result(renderer.instance_eval { binding })
-        # rubocop:enable Lint/ErbNewArguments
+        ERB.new(template.read, trim_mode: '>').result(renderer.instance_eval { binding })
       end
     end
   end
