@@ -7,6 +7,7 @@
     '.yardopts',
     'README.md',
     'bin/*',
+    'erb/**/*.erb',
     'lib/**/*.rb',
     'lib/**/version.yml',
 ].map { |m| Dir.glob(m) }.flatten.keep_if { |f| File.file?(f) }.sort
