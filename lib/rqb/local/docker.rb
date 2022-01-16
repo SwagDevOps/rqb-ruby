@@ -42,16 +42,17 @@ module Rqb::Local::Docker
         '-e', "OUTPUT_NAME=#{tex.output_name}",
         '-e', "TMPDIR=/tmp/u#{user.uid}",
         '-e', 'PATH=/workdir/ruby/bin:/usr/local/bin:/usr/bin:/bin',
-        '-v', "#{shell.pwd.join('.tmp').realpath}:/tmp/u#{user.uid}",
-        '-v', "#{shell.pwd.join('ruby').realpath}:/workdir/ruby",
-        '-v', "#{shell.pwd.join('vendor/bundle').realpath}:/workdir/ruby/vendor/bundle",
-        '-v', "#{shell.pwd.join('.bundle').realpath}:/workdir/ruby/.bundle",
-        '-v', "#{shell.pwd.join('src').realpath}:/workdir/src:ro",
-        '-v', "#{shell.pwd.join('out').realpath}:/workdir/out",
-        '-v', "#{shell.pwd.join('tmp').realpath}:/workdir/tmp",
-        '-w', "/workdir/#{path}",
-        image
-      ].compact.concat(command))
+      ].concat(lib.map { |v| ['-v', "#{shell.pwd.join('ruby').join(v).realpath}:/workdir/ruby/#{v}:ro"] }.flatten)
+       .concat([
+                 '-v', "#{shell.pwd.join('vendor/bundle').realpath}:/workdir/ruby/vendor/bundle",
+                 '-v', "#{shell.pwd.join('.bundle').realpath}:/workdir/ruby/.bundle",
+                 '-v', "#{shell.pwd.join('src').realpath}:/workdir/src:ro",
+                 '-v', "#{shell.pwd.join('out').realpath}:/workdir/out",
+                 '-v', "#{shell.pwd.join('tmp').realpath}:/workdir/tmp",
+                 '-v', "#{shell.pwd.join('.tmp').realpath}:/tmp/u#{user.uid}",
+                 '-w', "/workdir/#{path}",
+                 image
+               ]).compact.concat(command))
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -78,6 +79,17 @@ module Rqb::Local::Docker
 
     def tex
       ::Rqb::Local::Tex
+    end
+
+    def lib(pwd = shell.pwd)
+      Pathname.new(pwd)
+              .join('ruby')
+              .realpath
+              .children
+              .select(&:directory?)
+              .map { |fp| fp.basename.to_s }
+              .keep_if { |v| v[0] != '.' }
+              .sort
     end
   end
 end
