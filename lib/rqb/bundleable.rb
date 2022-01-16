@@ -28,7 +28,7 @@ module Rqb::Bundleable
     def included(othermod)
       # noinspection RubyNilAnalysis, RubyResolve
       Pathname.new(caller_locations.fetch(0).path).dirname.join('..').expand_path.freeze.yield_self do |basedir|
-        loader.call(basedir).tap { |v| require('stibium/bundled') if v.nil? }
+        loader.call(basedir)
       ensure
         othermod
           .__send__(:include, ::Stibium::Bundled)
