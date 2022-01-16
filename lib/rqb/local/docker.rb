@@ -42,7 +42,7 @@ module Rqb::Local::Docker
         '-e', "OUTPUT_NAME=#{tex.output_name}",
         '-e', "TMPDIR=/tmp/u#{user.uid}",
         '-e', 'PATH=/workdir/ruby/bin:/usr/local/bin:/usr/bin:/bin',
-      ].concat(lib.map { |v| ['-v', "#{shell.pwd.join('ruby').join(v).realpath}:/workdir/ruby/#{v}:ro"] }.flatten)
+      ].concat(*lib.map { |v| ['-v', "#{shell.pwd.join('ruby').join(v).realpath}:/workdir/ruby/#{v}:ro"] })
        .concat([
                  '-v', "#{shell.pwd.join('vendor/bundle').realpath}:/workdir/ruby/vendor/bundle",
                  '-v', "#{shell.pwd.join('.bundle').realpath}:/workdir/ruby/.bundle",
@@ -81,6 +81,11 @@ module Rqb::Local::Docker
       ::Rqb::Local::Tex
     end
 
+    # List directories for the lib.
+    #
+    # @param [Pathname, String] pwd
+    #
+    # @return [Array<String>]
     def lib(pwd = shell.pwd)
       Pathname.new(pwd)
               .join('ruby')
