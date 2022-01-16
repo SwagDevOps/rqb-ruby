@@ -28,11 +28,13 @@ module Rqb::Bundleable
     def included(othermod)
       # noinspection RubyNilAnalysis, RubyResolve
       Pathname.new(caller_locations.fetch(0).path).dirname.join('..').expand_path.freeze.yield_self do |basedir|
-        loader.call(basedir)
-      ensure
-        othermod
-          .__send__(:include, ::Stibium::Bundled)
-          .__send__(:bundled_from, basedir, setup: true, &bundle_handler)
+        loader.call(basedir).tap do |v|
+          require 'stibium/bundled' unless v
+
+          othermod
+            .__send__(:include, ::Stibium::Bundled)
+            .__send__(:bundled_from, basedir, setup: true, &bundle_handler)
+        end
       end
     end
 
@@ -54,7 +56,7 @@ module Rqb::Bundleable
         [
           [RUBY_ENGINE, RbConfig::CONFIG.fetch('ruby_version'), 'bundler/gems/*/stibium-bundled.gemspec'],
           [RUBY_ENGINE, RbConfig::CONFIG.fetch('ruby_version'), 'gems/stibium-bundled-*/lib/'],
-        ].map { |parts| Pathname.new(basedir).join(*['{**/,}bundle'].concat(parts)) }.yield_self do |patterns|
+        ].map { |parts| Pathname.new(basedir).join(*['{vendor/,}bundle'].concat(parts)) }.yield_self do |patterns|
           # noinspection RubyResolve
           Pathname.glob(patterns).first&.dirname&.tap { |gem_dir| require gem_dir.join('lib/stibium/bundled') }
         end
