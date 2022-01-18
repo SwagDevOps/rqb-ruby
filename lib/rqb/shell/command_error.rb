@@ -13,7 +13,7 @@ class Rqb::Shell::CommandError < ::RuntimeError
       @command = command.to_a.clone.map(&:freeze).freeze
       @message = Shellwords.join(command).freeze
       @status = status.freeze
-    end.freeze
+    end
   end
 
   # @return [String]
