@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../rqb'
+require_relative '../cli'
 
 # Represent a CLI app
 #
@@ -8,7 +8,7 @@ require_relative '../rqb'
 # as arguments and options with YAML syntax support.
 #
 # @abstract
-class Rqb::CliApp
+class Rqb::Cli::App
   autoload(:YAML, 'yaml')
 
   # @return [Array<Object>]

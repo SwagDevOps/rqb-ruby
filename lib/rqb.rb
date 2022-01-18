@@ -8,8 +8,7 @@ require 'English'
 module Rqb
   {
     Bundleable: :bundleable,
-    CliApp: :cli_app,
-    ErbApp: :erb_app,
+    Cli: :cli,
     Shell: :shell,
     Local: :local,
   }.each { |k, v| autoload(k, "#{__dir__}/rqb/#{v}") }

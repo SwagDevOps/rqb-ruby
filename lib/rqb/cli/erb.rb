@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../rqb'
+require_relative '../cli'
 
 # @abstract
-class Rqb::ErbApp < Rqb::CliApp
+class Rqb::Cli::Erb < Rqb::Cli::App
   autoload(:ERB, 'erb')
-  autoload(:Pathname, 'pathname')
   autoload(:FileUtils, 'fileutils')
+  autoload(:Pathname, 'pathname')
 
   # @return [Array<String>]
   attr_reader :arguments
@@ -14,25 +14,20 @@ class Rqb::ErbApp < Rqb::CliApp
   # @return [Hash{Symbol => Object}]
   attr_reader :options
 
-  def initialize(*)
-    -> { super }.tap do
+  def initialize(argv = ARGV, template_dir: nil)
+    -> { super(argv) }.tap do
       @fs = FileUtils::Verbose
+      self.template_dir = template_dir
     end.call
   end
 
   class << self
-    # Behave as ``__FILE__`` during class inheritance.
+    # Default path to stored template files.
     #
     # @return [Pathname]
-    def path
-      @path = Pathname.new(@path || caller_locations.first.path).freeze
+    def template_dir
+      Pathname.new(__dir__).join('../../..').join('erb').realpath
     end
-
-    protected
-
-    attr_writer :path
-
-    alias file= path=
   end
 
   # Get variables.
@@ -51,7 +46,7 @@ class Rqb::ErbApp < Rqb::CliApp
   #
   # @return [Pathname]
   def output_file
-    [output_basepath, class_file.basename.to_s, 'tex'].join('.').then { |fp| Pathname.new(fp) }
+    [output_basepath, "erb-#{template_name}", 'tex'].join('.').then { |fp| Pathname.new(fp) }
   end
 
   # Write file.
@@ -71,9 +66,8 @@ class Rqb::ErbApp < Rqb::CliApp
   # @return [Pathname]
   def template
     [
-      Pathname.new(class_file).dirname.to_s,
-      '..',
-      "#{Pathname.new(class_file).basename('.rb').to_s.gsub('-', '/').dup}.tex.erb"
+      template_dir,
+      "#{template_name}.tex.erb"
     ].join('/').then { |fp| Pathname.new(fp).realpath }
   end
 
@@ -92,12 +86,17 @@ class Rqb::ErbApp < Rqb::CliApp
   protected
 
   # @return [Class<FileUtils::Verbose>]
-  attr_accessor :fs
+  attr_reader :fs
 
   # @return [Pathname]
-  def class_path
-    self.class.path
+  attr_reader :template_dir
+
+  # @return [String]
+  def template_name
+    self.class.name.split('::').last.gsub(/(.)([A-Z])/, '\1_\2').downcase.gsub(/^erb_/, '')
   end
 
-  alias class_file class_path
+  def template_dir=(template_dir)
+    @template_dir = template_dir ? Pathname.new(template_dir) : self.class.__send__(:template_dir)
+  end
 end
