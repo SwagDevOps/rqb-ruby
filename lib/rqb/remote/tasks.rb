@@ -68,10 +68,15 @@ PDF_TYPES.tap do |types|
   end
 end
 
-desc 'Shell'
+desc 'Shell (irb)'
 task :shell do
   ARGV.clear
-  IRB.start
+  -> { IRB.start }.tap do
+    {
+      SAVE_HISTORY: 1000,
+      HISTORY_FILE: "#{ENV.fetch('TMPDIR', '/tmp')}/.irb_history",
+    }.map { |k, v| IRB.conf[k] = v }
+  end.call
 end
 
 desc 'Watch'
