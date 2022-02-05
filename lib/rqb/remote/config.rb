@@ -8,45 +8,47 @@ class Rqb::Remote::Config < ::Hash
     # @api private
     def mapping
       {
-        TEX_DIR: :tex_dir,
-        SRC_DIR: :src_dir,
-        OUT_DIR: :out_dir,
-        OUTPUT_NAME: :output_name,
-        LATEX_NAME: :latex_name,
-        WATCH_EXCLUDE: {
-          watch_exclude: '^.*/(\..+|(M|m)akefile|.*(\.mk|~))$'
-        }
+        tex_dir: 'tmp',
+        src_dir: 'src',
+        out_dir: 'out',
+        output_name: 'book',
+        latex_name: 'index',
+        watch_exclude: '^.*/(\..+|(M|m)akefile|.*(\.mk|~))$',
       }
     end
   end
 
-  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-
-  def initialize(env: ENV.to_h.clone)
+  def initialize(env: nil)
     super
 
-    self.class.mapping.each do |k, v|
-      key = (v.is_a?(Hash) ? v.keys.fetch(0) : v).to_sym
-      lambda do
-        return nil unless v.is_a?(Hash)
-
-        v.values.fetch(0).tap do |blk|
-          return ->(*) { blk } unless blk.is_a?(Proc)
-        end
-      end.call.tap do |blk|
-        self[key] = (blk ? env.fetch(k.to_s, &blk) : env.fetch(k.to_s)).to_s
+    (@env = env || ENV.to_h.clone.freeze).then do
+      self.class.mapping.each do |k, default|
+        self[k.to_sym] = env(k, default)
       end
     end
   end
 
-  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+  protected
+
+  # Retrieve value from env.
+  #
+  # Given key is transformed to uppercase as env variable.
+  # If not default is given ``KeyError`` is raised.
+  #
+  # @param [String, Symbol] key
+  # @param [Object, nil] default
+  #
+  # @return [Object]
+  def env(key, default = nil)
+    @env.fetch(*[key.to_s.upcase, default].compact)
+  end
 
   class << self
     # @param [Symbol|String] key
     #
     # @return [String]
     def [](key)
-      # noinspection RubyYardReturnMatch
+      # noinspection RubyYardReturnMatch,RubyMismatchedReturnType
       self.new.fetch(key.to_sym)
     end
 
