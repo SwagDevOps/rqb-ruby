@@ -58,13 +58,7 @@ module Rqb::Local::Docker
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def rake(task, path: nil)
-      run([
-            'rake', task.to_s,
-            'OUT_DIR=out',
-            'SRC_DIR=src',
-            'TEX_DIR=tmp',
-            'LATEX_NAME=index',
-          ], path: path)
+      run(['rake', task.to_s], path: path)
     end
 
     protected

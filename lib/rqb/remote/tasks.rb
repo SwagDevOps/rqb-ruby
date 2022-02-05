@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rake TEX_DIR=tmp SRC_DIR=src LATEX_NAME=index OUT_DIR=out
-
 require_relative '../remote'
 
 autoload(:IRB, 'irb')
