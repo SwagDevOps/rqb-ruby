@@ -5,8 +5,14 @@ require_relative '../remote'
 # Provide config based on evironment variables
 class Rqb::Remote::Config < ::Hash
   class << self
+    protected
+
+    # Defaults from env variables (uppercase in environment).
+    #
+    # @see Config#env()
+    #
     # @api private
-    def mapping
+    def defaults
       {
         tex_dir: 'tmp',
         src_dir: 'src',
@@ -18,29 +24,38 @@ class Rqb::Remote::Config < ::Hash
     end
   end
 
-  def initialize(env: nil)
-    super
+  # Store a copy of environment as seen on initialization.
+  #
+  # @return [Hash]
+  attr_reader :env
 
-    (@env = env || ENV.to_h.clone.freeze).then do
-      self.class.mapping.each do |k, default|
-        self[k.to_sym] = env(k, default)
-      end
-    end
+  def initialize(env: nil)
+    super().then { setup(env) }
   end
 
   protected
 
+  # @param [Hash, ENV, nil] env
+  def setup(env)
+    @env = env || ENV.to_h.clone.freeze
+
+    self.class.__send__(:defaults).each do |k, default|
+      self[k.to_sym] = configure(k, default)
+    end
+  end
+
   # Retrieve value from env.
   #
   # Given key is transformed to uppercase as env variable.
-  # If not default is given ``KeyError`` is raised.
+  # If not default is given ``KeyError`` is raised when ENV var is not set.
   #
   # @param [String, Symbol] key
   # @param [Object, nil] default
   #
   # @return [Object]
-  def env(key, default = nil)
-    @env.fetch(*[key.to_s.upcase, default].compact)
+  def configure(key, default = nil)
+    # noinspection RubyMismatchedReturnType
+    env.fetch(*[key.to_s.upcase, default].compact)
   end
 
   class << self
