@@ -9,6 +9,7 @@ module Rqb
   {
     Bundleable: :bundleable,
     Cli: :cli,
+    Remote: :remote,
     Shell: :shell,
     Local: :local,
   }.each { |k, v| autoload(k, "#{__dir__}/rqb/#{v}") }
