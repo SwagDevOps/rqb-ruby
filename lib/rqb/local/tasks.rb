@@ -17,6 +17,10 @@ caller_locations.fetch(0).to_s.then do |fp|
   ENV['TEX_PROJECT_NAME'] ||= Pathname.new(fp).dirname.basename.to_s.freeze
 end
 
+# config ---------------------------------------------------------------------
+
+config = Rqb::Local::Config
+
 # tasks ----------------------------------------------------------------------
 
 task default: [:'tex:build']
@@ -49,20 +53,20 @@ end
 
 desc 'Irb'
 task irb: %w[docker:build setup] do
-  Rqb::Local::Docker.rake(:shell, path: 'src')
+  Rqb::Local::Docker.rake(:shell, path: config[:src_dir])
 end
 
 desc 'TeX sync'
 task 'tex:sync': %w[docker:build setup] do
-  Rqb::Local::Docker.rake(:sync, path: 'src')
+  Rqb::Local::Docker.rake(:sync, path: config[:src_dir])
 end
 
 desc 'TeX build'
 task 'tex:build': %w[tex:sync] do
-  Rqb::Local::Docker.rake(:all, path: 'tmp')
+  Rqb::Local::Docker.rake(:all, path: config[:tex_dir])
 end
 
 desc 'TeX log'
 task 'tex:log': %w[docker:build setup] do
-  Rqb::Local::Docker.rake(:log, path: 'src')
+  Rqb::Local::Docker.rake(:log, path: config[:src_dir])
 end
