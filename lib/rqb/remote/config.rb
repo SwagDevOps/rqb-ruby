@@ -22,7 +22,7 @@ class Rqb::Remote::Config < ::Hash
 
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 
-  def initialize
+  def initialize(env: ENV.to_h.clone)
     super
 
     self.class.mapping.each do |k, v|
@@ -34,7 +34,7 @@ class Rqb::Remote::Config < ::Hash
           return ->(*) { blk } unless blk.is_a?(Proc)
         end
       end.call.tap do |blk|
-        self[key] = (blk ? ENV.fetch(k.to_s, &blk) : ENV.fetch(k.to_s)).to_s
+        self[key] = (blk ? env.fetch(k.to_s, &blk) : env.fetch(k.to_s)).to_s
       end
     end
   end
