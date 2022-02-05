@@ -6,6 +6,7 @@ require_relative '../rqb'
 module Rqb::Local
   "#{__dir__}/local".tap do |path|
     {
+      Config: 'config',
       Docker: 'docker',
       Shell: 'shell',
       Tex: 'tex',
