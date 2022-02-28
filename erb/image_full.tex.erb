@@ -1,7 +1,10 @@
 %! suppress = MissingImport
-\begin{figure}[p]
-  \vspace*{-0cm}
+% see: https://stackoverflow.com/questions/1963923/adding-full-page-figures-in-latex-how
+\begin{figure}[ptbh]
+    \vspace*{-0cm}
     \makebox[\linewidth]{
-      \centerline{\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{<%= image %>}
-    }}
+        \centerline{
+            \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{<%= image %>}
+        }
+    }
 \end{figure}
