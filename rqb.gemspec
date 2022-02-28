@@ -45,6 +45,7 @@ Gem::Specification.new do |s|
     "lib/rqb/cli/erb_image_full.rb",
     "lib/rqb/cli/svg2pdf.rb",
     "lib/rqb/local.rb",
+    "lib/rqb/local/config.rb",
     "lib/rqb/local/docker.rb",
     "lib/rqb/local/shell.rb",
     "lib/rqb/local/tasks.rb",
