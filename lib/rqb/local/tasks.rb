@@ -35,6 +35,9 @@ unless Rake::Task.task_defined?(:setup)
         Bundler.locked_gems.specs.keep_if { |v| v.name == 'rqb' }.fetch(0).full_gem_path.tap do |fp|
           fs.rm_f(directory)
           fs.ln_sf(fp, directory)
+          fs.ln_sf("#{Dir.pwd}/vendor", directory)
+          fs.ln_sf("#{Dir.pwd}/.bundle", directory)
+          fs.rm_rf("#{directory}/.git/")
         end
       end
     end
