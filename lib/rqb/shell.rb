@@ -5,6 +5,7 @@ require_relative '../rqb'
 # Shell utilities
 module Rqb::Shell
   {
+    App: :app,
     Chalk: :chalk,
     Command: :command,
     CommandError: :command_error,
