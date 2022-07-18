@@ -15,8 +15,10 @@ def github(repo, options = {}, &block)
 end
 
 group :default do
+  gem 'clamp', '~> 1.3'
   gem 'kamaze-version', '~> 1.0'
   gem 'stibium-bundled', '~> 0.0', '>= 0.0.4'
+  gem 'yard', '~> 0.9'
 end
 
 group :development do
@@ -35,6 +37,5 @@ end
 group :doc do
   gem 'github-markup', '~> 3.0'
   gem 'redcarpet', '~> 3.5'
-  gem 'yard', '~> 0.9'
   gem 'yard-coderay', '~> 0.1'
 end
