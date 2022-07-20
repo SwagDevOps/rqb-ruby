@@ -27,7 +27,9 @@ class Rqb::Shell::App::Loader
   # @return [Array]
   def call(&block)
     loadables.map do |name, loadable|
-      info(loadable).then { |info| block.call(name.to_s, info) }
+      info(loadable).then do |info|
+        block.call(name.to_s, info) if info
+      end
     end
   end
 
@@ -71,10 +73,12 @@ class Rqb::Shell::App::Loader
   # Main goal is to restrict items seen from a loadable. As a result, only info
   # useful to setup a subcommand are kept.
   #
-  # @param [Struct] loadable
+  # @param [Struct, nil] loadable
   #
   # @return [Struct]
   def info(loadable)
+    return nil unless loadable.description.is_a?(String)
+
     Struct.new(*%i[name description class_name], keyword_init: true)
           .new({
                  description: loadable.description,

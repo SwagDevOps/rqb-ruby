@@ -11,7 +11,14 @@ class Rqb::Shell::App::Loader::Parser
   # @param [Pathname] file
   def initialize(file)
     self.file = file
+
     @parsed_attributes = %i[file name namespace description loader].freeze
+    # noinspection RubyLiteralArrayInspection
+    @inheritance_whitlelist = [
+      'Clamp::Command',
+      'Rqb::Cli::Command',
+      /^Rqb::Cli::Base::[A-Z]+/,
+    ].freeze
   end
 
   class << self
@@ -37,6 +44,11 @@ class Rqb::Shell::App::Loader::Parser
   # @return [Array<Symbol>]
   attr_reader :parsed_attributes
 
+  # @todo Use config to retrieve the withelist.
+  #
+  # @return [Array<String, Regexp>]
+  attr_reader :inheritance_whitlelist
+
   # @return [Array<YARD::CodeObjects::ClassObject>]
   def parse_object
     YARD.parse(file.to_path).then do
@@ -50,7 +62,7 @@ class Rqb::Shell::App::Loader::Parser
       file: file,
       name: info.name,
       namespace: info.namespace.to_s,
-      description: info.docstring,
+      description: (info.docstring&.lines || []).first,
       loader: make_loader(file, info)
     }.then { |kwargs| struct.new(**kwargs) }
   end
@@ -67,7 +79,8 @@ class Rqb::Shell::App::Loader::Parser
     YARD::Registry
       .all
       .keep_if { |object| object.is_a?(YARD::CodeObjects::ClassObject) }
-      .keep_if { |object| object.inheritance_tree.map(&:to_s).include?(::Rqb::Cli::Command.to_s) }
+      .keep_if { |object| inheritance_whitlelist?(object) }
+      .reject { |object| object.has_tag?('abstract') }
   end
 
   # Provide a loader for given file with given info.
@@ -78,11 +91,36 @@ class Rqb::Shell::App::Loader::Parser
   # @return [Proc]
   def make_loader(file, info)
     [info.namespace, info.name].compact.join('::').then do |class_name|
-      lambda do
-        "(require'#{file}').then { #{class_name} }".then do |script|
-          self.instance_eval(script, __FILE__, __LINE__ - 1)
+      -> { load_class_file(file, class_name) }
+    end
+  end
+
+  # Load given file and returns given class name.
+  #
+  # @param [String, Pathname] file
+  # @param [String] class_name
+  #
+  # @return [Class]
+  def load_class_file(file, class_name)
+    "require('#{file}').then { #{class_name} }".then do |script|
+      ::Object.class_eval(script, __FILE__, __LINE__ - 1)
+    end
+  end
+
+  # Denotes given object is whitelisted on inheritance tree.
+  #
+  # @param [Array<YARD::CodeObjects::ClassObject, YARD::CodeObjects::Base>] object
+  #
+  # @return [Boolean]
+  def inheritance_whitlelist?(object)
+    object.inheritance_tree.map(&:to_s).then do |tree|
+      inheritance_whitlelist.map do |pattern|
+        if pattern.is_a?(Regexp)
+          tree.map { |class_name| class_name.match?(pattern) }.include?(true)
+        else
+          tree.include?(pattern.to_s)
         end
       end
-    end
+    end.include?(true)
   end
 end
