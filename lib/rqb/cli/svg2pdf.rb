@@ -5,7 +5,7 @@ require_relative '../cli'
 # Wrapper build on top fo convert
 #
 # Output is cached and compared by original file md5sum.
-class Rqb::Cli::Svg2Pdf < Rqb::Cli::App
+class Rqb::Cli::Svg2Pdf < Rqb::Cli::LegacyApp
   autoload(:Digest, 'digest')
   autoload(:Pathname, 'pathname')
   autoload(:FileUtils, 'fileutils')

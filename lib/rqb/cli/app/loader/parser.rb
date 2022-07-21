@@ -3,7 +3,7 @@
 require_relative '../loader'
 
 # Source-code parser based on YARD.
-class Rqb::Shell::App::Loader::Parser
+class Rqb::Cli::App::Loader::Parser
   autoload(:YARD, 'yard')
 
   # Initialize with parseable file.

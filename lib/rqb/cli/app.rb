@@ -2,64 +2,47 @@
 
 require_relative '../cli'
 
-# Represent a CLI app
+# Cli app based on top of clamp.
 #
-# able to basically parse given arguments (<code>ARGV</code>),
-# as arguments and options with YAML syntax support.
-#
-# @abstract
-class Rqb::Cli::App
-  autoload(:YAML, 'yaml')
+# @see https://github.com/mdub/clamp
+class Rqb::Cli::App < ::Clamp::Command
+  autoload(:Pathname, 'pathname')
 
-  # @return [Array<Object>]
-  attr_reader :arguments
+  {
+    Loader: 'loader',
+  }.each { |k, v| autoload(k, "#{__dir__}/app/#{v}") }
 
-  # @return [Hash{Symbol => Object}]
-  attr_reader :options
+  # Execute is triggered when no subcommands are found.
+  #
+  # Print an error message on STDERR and exit with an error status code.
+  def execute
+    warn('No commands implemented at the moment.')
 
-  # @param [Array<String>] argv
-  def initialize(argv = ARGV)
-    -> { freeze }.tap do
-      (@argv = argv.dup.map(&:freeze).freeze).tap do
-        self.class.__send__(:parse_argv, argv.dup).tap do |struct|
-          @arguments = struct.arguments
-          @options = struct.options
-        end
-      end
-    end.call
+    Errno::ENOTSUP::Errno.tap { |status| exit(status) }
   end
 
   class << self
-    # rubocop:disable Metrics/AbcSize
+    protected
 
-    # Parse arguments.
-    #
-    # options with format ``[a-z]+[a-z -_]+=``
-    #
-    # @param [Array<String>] argv
-    #
-    # @return [Struct]
-    def parse_argv(argv, yaml: nil)
-      yaml ||= ->(str) { YAML.safe_load(str, [Symbol]).freeze }
-
-      /^([a-z]+[a-z -_]+)=(.+)$/.yield_self do |reg|
-        # @formatter:off
-        {
-          arguments: argv.dup.reject { |s| reg.match?(s) }.map { |v| yaml.call(v) }.freeze,
-          options: (argv.dup.keep_if { |s| reg.match?(s) })
-            .map { |s| [reg.match(s).to_a.fetch(1).gsub(/([-_])+/, '_').to_sym, reg.match(s).to_a.fetch(2)] }
-            .to_h
-            .transform_values { |v| yaml.call(v) }.freeze
-        }.yield_self { |h| Struct.new(*h.keys).new(*h.values).freeze }
-        # @formatter:on
-      end
+    # @return [String]
+    def invocation_path
+      File.basename($PROGRAM_NAME)
     end
 
-    # rubocop:enable Metrics/AbcSize
+    # Get paths from where subcommands are loaded.
+    #
+    # @return [Array<Pathname>]
+    def paths
+      [
+        Pathname.new(__dir__).join('commands')
+      ]
+    end
+
+    def loader
+      Loader.new(self.paths)
+    end
   end
 
-  protected
-
-  # @return [Array<String>]
-  attr_reader :argv
+  # Load commands -------------------------------------------------------------
+  loader.call { |name, info| subcommand(name, info.description, info.class_name) }
 end

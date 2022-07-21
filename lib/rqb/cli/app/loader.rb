@@ -3,7 +3,7 @@
 require_relative '../app'
 
 # Loader for commands.
-class Rqb::Shell::App::Loader
+class Rqb::Cli::App::Loader
   autoload(:Pathname, 'pathname')
   {
     Parser: :parser,

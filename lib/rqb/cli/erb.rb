@@ -3,7 +3,7 @@
 require_relative '../cli'
 
 # @abstract
-class Rqb::Cli::Erb < Rqb::Cli::App
+class Rqb::Cli::Erb < Rqb::Cli::LegacyApp
   autoload(:ERB, 'erb')
   autoload(:FileUtils, 'fileutils')
   autoload(:Pathname, 'pathname')

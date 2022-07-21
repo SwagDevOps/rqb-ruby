@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../rqb'
+autoload(:Clamp, 'clamp')
 
 # Namespace module
 module Rqb::Cli
@@ -8,6 +9,7 @@ module Rqb::Cli
     {
       App: :app,
       Erb: :erb,
+      LegacyApp: :legacy_app, # @todo remove legacy app
       ErbChapters: :erb_chapters,
       ErbHyperrefSetup: :erb_hyperref_setup,
       ErbImageFull: :erb_image_full,
@@ -31,6 +33,6 @@ module Rqb::Cli
   # Base class for subcommands.
   #
   # @abstract
-  class Command < Clamp::Command
+  class Command < ::Clamp::Command
   end
 end
