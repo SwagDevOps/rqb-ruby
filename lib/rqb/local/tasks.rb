@@ -28,25 +28,15 @@ task default: [:'tex:build']
 unless Rake::Task.task_defined?(:setup)
   desc 'Setup'
   task :setup do
-    fs = FileUtils::Verbose
-
-    Pathname.new('ruby').tap do |directory|
-      unless directory.directory?
-        Bundler.locked_gems.specs.keep_if { |v| v.name == 'rqb' }.fetch(0).full_gem_path.tap do |fp|
-          fs.rm_f(directory)
-          fs.ln_sf(fp, directory)
-          fs.ln_sf("#{Dir.pwd}/vendor", directory)
-          fs.ln_sf("#{Dir.pwd}/.bundle", directory)
-          fs.rm_rf("#{directory}/.git/")
-        end
-      end
-    end
+    # @todo do something with the bin directory of gem
+    Bundler.locked_gems.specs.keep_if { |v| v.name == 'rqb' }.fetch(0).full_gem_path
   end
 end
 
 desc 'Docker build'
 task :'docker:build' do
   Rqb::Local::Docker.build
+  Rqb::Local::Docker.install
 end
 
 desc 'Shell'

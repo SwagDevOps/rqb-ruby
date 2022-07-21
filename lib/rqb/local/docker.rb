@@ -14,15 +14,8 @@ module Rqb::Local::Docker
     end
 
     def directories
-      [
-        # tex directories -----------------------------------------------------
-        'out',
-        'src',
-        'tmp',
-        # bundler directories -------------------------------------------------
-        'vendor/bundle',
-        '.bundle',
-      ].sort.freeze
+      # tex directories
+      %w[out src tmp].sort.freeze
     end
 
     def build
@@ -31,34 +24,47 @@ module Rqb::Local::Docker
 
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 
-    def run(command = [], path: nil)
-      fs.mkdir_p(directories)
+    # Executes given command in a container.
+    #
+    # @param [Array<String>] command
+    # @param [String] path
+    # @param [Struct] user
+    #
+    # @return [Process::Status]
+    def run(command = [], path: nil, user: nil)
+      user ||= self.user
 
-      shell.sh(*[
+      [
         '/usr/bin/env', 'docker', 'run', '--rm',
         shell.tty? ? '-it' : nil,
-        '--user', [user.uid, user.gid].join(':'),
+        '-u', [user.uid, user.gid].join(':'),
         '-e', "TERM=#{ENV.fetch('TERM', 'xterm')}",
         '-e', "OUTPUT_NAME=#{tex.output_name}",
         '-e', "TMPDIR=/tmp/u#{user.uid}",
-        '-e', 'PATH=/workdir/ruby/bin:/usr/local/bin:/usr/bin:/bin',
-      ].concat(*lib.map { |v| ['-v', "#{shell.pwd.join('ruby').join(v).realpath}:/workdir/ruby/#{v}:ro"] })
-       .concat([
-                 '-v', "#{shell.pwd.join('vendor/bundle').realpath}:/workdir/ruby/vendor/bundle",
-                 '-v', "#{shell.pwd.join('.bundle').realpath}:/workdir/ruby/.bundle",
-                 '-v', "#{shell.pwd.join('src').realpath}:/workdir/src:ro",
-                 '-v', "#{shell.pwd.join('out').realpath}:/workdir/out",
-                 '-v', "#{shell.pwd.join('tmp').realpath}:/workdir/tmp",
-                 '-v', "#{shell.pwd.join('.tmp').realpath}:/tmp/u#{user.uid}",
-                 '-w', "/workdir/#{path}",
-                 image
-               ]).compact.concat(command))
+        '-v', "#{shell.pwd.join('gems.rb').realpath}:/workdir/gems.rb:ro",
+        '-v', "#{shell.pwd.join('gems.locked').realpath}:/workdir/gems.locked:ro",
+        '-v', "#{shell.pwd.join('vendor').realpath}:/workdir/vendor",
+        '-v', "#{shell.pwd.join('.bundle').realpath}:/workdir/.bundle",
+        '-v', "#{shell.pwd.join('src').realpath}:/workdir/src:ro",
+        '-v', "#{shell.pwd.join('out').realpath}:/workdir/out",
+        '-v', "#{shell.pwd.join('tmp').realpath}:/workdir/tmp",
+        '-v', "#{shell.pwd.join('.tmp').realpath}:/tmp/u#{user.uid}",
+        '-w', "/workdir/#{path}",
+        image
+      ]
+        .compact
+        .concat(command)
+        .then { |params| shell.sh(*params) }
     end
 
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
+    def install
+      run(%w[bundle install --standalone])
+    end
+
     def rake(task, path: nil)
-      run(['rake', task.to_s], path: path)
+      run(%w[bundle exec rake].concat([task.to_s]), path: path)
     end
 
     protected
@@ -73,22 +79,6 @@ module Rqb::Local::Docker
 
     def tex
       ::Rqb::Local::Tex
-    end
-
-    # List directories for the lib.
-    #
-    # @param [Pathname, String] pwd
-    #
-    # @return [Array<String>]
-    def lib(pwd = shell.pwd)
-      Pathname.new(pwd)
-              .join('ruby')
-              .realpath
-              .children
-              .select(&:directory?)
-              .map { |fp| fp.basename.to_s }
-              .keep_if { |v| v[0] != '.' }
-              .sort
     end
   end
 end
