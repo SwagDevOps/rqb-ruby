@@ -18,10 +18,15 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Command
       super.tap do
         subclass.class_eval do
           parameter 'SRC', 'source file', attribute_name: :param_file
+          option(['--[no-]debug'], :flag, 'enable debug messages', default: true)
         end
       end
     end
   end
+
+  # @!method debug?
+  #   Denotes debug is active
+  #   @return [Boolean]
 
   # Get variables.
   #
@@ -58,15 +63,6 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Command
     template.call(variables)
   end
 
-  # Denotes debugs is active
-  #
-  # Set verbosity for low-level messages (as fs calls).
-  #
-  # @return [Boolean]
-  def debug?
-    true
-  end
-
   protected
 
   # Instance responsible to output a file result.
@@ -89,7 +85,7 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Command
   #
   # @return [Template]
   def template
-    Template.new(template_name)
+    Template.new(template_name, debug: debug?)
   end
 
   # Get the name (without extension) for the template.

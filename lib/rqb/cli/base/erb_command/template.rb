@@ -11,8 +11,13 @@ class Rqb::Cli::Base::ErbCommand::Template
   attr_reader :name
 
   # @param [String] name
-  def initialize(name)
-    self.name = name.freeze
+  # @param [Boolean] debug
+  def initialize(name, debug: true)
+    self.tap do
+      self.name = name.freeze
+      # noinspection RubySimplifyBooleanInspection
+      self.debug = !!debug
+    end.freeze
   end
 
   # Render template.
@@ -22,9 +27,20 @@ class Rqb::Cli::Base::ErbCommand::Template
     bind(variables).then { |b| erb.result(b) }
   end
 
+  # Denotes debug messages SHOULD appear.
+  #
+  # @return [Boolean]
+  def debug?
+    !!self.debug
+  end
+
   protected
 
+  # @type [String]
   attr_writer :name
+
+  # @type [Boolean]
+  attr_accessor :debug
 
   def erb
     # @see https://github.com/rubocop/rubocop/pull/5845#issuecomment-1008348049
@@ -33,9 +49,12 @@ class Rqb::Cli::Base::ErbCommand::Template
 
   # Read template file.
   #
-  # @@return [String, nil]
+  # @return [String, nil]
   def read
-    file&.read
+    # @type [Pathname] file
+    # rubocop:disable Style/SymbolProc
+    with_file { |file| file.read }
+    # rubocop:enable Style/SymbolProc
   end
 
   # Make binding for ERB rendering and variables lookup.
@@ -67,5 +86,25 @@ class Rqb::Cli::Base::ErbCommand::Template
     [
       Pathname.new(__dir__).join('../..', 'erb').realpath
     ]
+  end
+
+  # Execute given block only when file exists.
+  #
+  # @yieldparam [Pathname] file
+  #
+  # @return [String, nil]
+  def with_file(&block)
+    file.nil? ? missing_file : block.call(file)
+  end
+
+  # Behavior for missing file.
+  #
+  # Defaults to print a message on STDERR.
+  #
+  # @return [NilClass]
+  def missing_file
+    nil.tap do
+      warn("Can not read template for #{name.inspect}") if debug?
+    end
   end
 end
