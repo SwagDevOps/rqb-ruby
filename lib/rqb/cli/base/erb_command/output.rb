@@ -10,10 +10,12 @@ class Rqb::Cli::Base::ErbCommand::Output
   # @param [String] basepath
   # @param [Boolean] verbose
   def initialize(basepath, name, verbose: true)
-    self.basepath = basepath
-    self.name = name
-    # noinspection RubySimplifyBooleanInspection
-    self.verbose = !!verbose
+    self.tap do
+      self.basepath = basepath
+      self.name = name
+      # noinspection RubySimplifyBooleanInspection
+      self.verbose = !!verbose
+    end.freeze
   end
 
   def verbose?
