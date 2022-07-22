@@ -34,5 +34,7 @@ module Rqb::Cli
   #
   # @abstract
   class Command < ::Clamp::Command
+    # @see https://github.com/mdub/clamp/blob/05bc13f7b484ae3e116c6f0de5a5e18280fa9ecc/README.md#allowing-options-after-parameters
+    ::Clamp.allow_options_after_parameters = true
   end
 end
