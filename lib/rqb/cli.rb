@@ -17,6 +17,10 @@ module Rqb::Cli
     }.each { |k, v| autoload(k, "#{path}/#{v}") }
   end
 
+  require('fileutils').then do
+    ::FileUtils::Verbose.instance_variable_set(:@fileutils_output, $stderr)
+  end
+
   # Namespace for commands
   module Commands
   end
