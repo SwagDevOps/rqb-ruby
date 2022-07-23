@@ -29,6 +29,7 @@ module Rqb::Cli
   module Base
     "#{__dir__}/cli/base".tap do |path|
       {
+        BaseCommand: :base_command,
         ErbCommand: :erb_command,
       }.each { |k, v| autoload(k, "#{path}/#{v}") }
     end
