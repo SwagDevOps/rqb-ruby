@@ -9,6 +9,7 @@ require_relative '../app'
 class Rqb::Cli::Commands::SampleCommand < Rqb::Cli::Base::ErbCommand
   autoload(:Faker, 'faker')
   autoload(:Digest, 'digest')
+  autoload(:Pathname, 'pathname')
 
   def variables
     {
@@ -16,14 +17,36 @@ class Rqb::Cli::Commands::SampleCommand < Rqb::Cli::Base::ErbCommand
     }
   end
 
+  # @return [Pathname, nil]
+  def source
+    super
+  rescue StandardError
+    nil
+  end
+
+  class << self
+    # @todo add a better mechanism to override already defined pararemters
+    def parameters
+      super.tap do |parameters|
+        if parameters[0].name == 'SOURCE'
+          parameters[0] = Clamp::Parameter::Definition.new('[SOURCE]', 'source', { attribute_name: :param_source })
+        end
+      end
+    end
+  end
+
   protected
 
   def output_basepath
-    "/tmp/#{Digest::SHA1.hexdigest(input_file.to_s)}.#{Process.uid}"
+    tmpdir.join("#{Digest::SHA1.hexdigest((source || template_name).to_s)}.#{Process.uid}").to_path
   end
 
   # @return [Class<Faker::Books::Lovecraft>]
   def lovecraft
     Faker::Books::Lovecraft
+  end
+
+  def tmpdir
+    require('tmpdir').then { Pathname.new(Dir.tmpdir) }
   end
 end
