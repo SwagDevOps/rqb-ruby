@@ -18,6 +18,7 @@ group :default do
   gem 'clamp', '~> 1.3'
   gem 'faker', '~> 2.21'
   gem 'kamaze-version', '~> 1.0'
+  gem 'rouge', '~> 3.29'
   gem 'stibium-bundled', '~> 0.0', '>= 0.0.4'
   gem 'yard', '~> 0.9'
 end
