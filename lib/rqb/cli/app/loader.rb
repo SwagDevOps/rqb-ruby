@@ -54,7 +54,7 @@ class Rqb::Cli::App::Loader
   #
   # @return [Hash{Symbol => Struct}]
   def loadables
-    files.map { |fp| [fp.basename.to_s.gsub(/_command.rb$/, '').to_sym, fp] }.to_h.map do |name, fp|
+    files.map { |fp| [name_for(fp), fp] }.to_h.map do |name, fp|
       parse(fp).then { |info| [name, info] }
     end.keep_if { |_, object| object }.to_h
   end
@@ -77,12 +77,26 @@ class Rqb::Cli::App::Loader
   #
   # @return [Struct]
   def info(loadable)
-    return nil unless loadable.description.is_a?(String)
+    return nil if [nil, ''].include?(loadable.description)
 
     Struct.new(*%i[name description class_name], keyword_init: true)
           .new({
-                 description: loadable.description,
+                 description: loadable.description.to_s,
                  class_name: loadable.loader.call,
                })
+  end
+
+  # Make name for loaadable from given filepath.
+  #
+  # @param [Pathname]
+  #
+  # @return [Symbol]
+  def name_for(filepath)
+    filepath
+      .basename
+      .to_s
+      .gsub(/_command.rb$/, '')
+      .gsub('_', '-')
+      .to_sym
   end
 end
