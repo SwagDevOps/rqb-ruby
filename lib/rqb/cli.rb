@@ -23,6 +23,12 @@ module Rqb::Cli
 
   # Namespace for commands
   module Commands
+    # Module with classes/modules shared between several commands
+    module Shared
+      {
+        SvgConv: :svg_conv,
+      }.each { |k, v| autoload(k, "#{__dir__}/cli/commands/shared/#{v}") }
+    end
   end
 
   # Namespace for base (abstract) commands
