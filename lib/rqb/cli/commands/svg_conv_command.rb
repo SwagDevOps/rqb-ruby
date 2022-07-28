@@ -7,10 +7,15 @@ class Rqb::Cli::Commands::SvgConvCommand < Rqb::Cli::Base::BaseCommand
   include ::Rqb::Cli::Commands::Concerns::SvgConvert
 
   parameter('SOURCE', 'filepath without extension', { attribute_name: :param_source })
+  option('--[no-]cache', :flag, 'enable cache', { default: true })
   option('--[no-]debug', :flag, 'enable debug messages', { default: true })
 
   # @!method debug?
   #   Denotes debug is active
+  #   @return [Boolean]
+
+  # @!method cache?
+  #   Denotes cache is active
   #   @return [Boolean]
 
   # @!attribute [rw] param_source
