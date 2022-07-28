@@ -88,7 +88,7 @@ class Rqb::Cli::App::Loader
 
   # Make name for loaadable from given filepath.
   #
-  # @param [Pathname]
+  # @param [Pathname] filepath
   #
   # @return [Symbol]
   def name_for(filepath)
