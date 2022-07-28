@@ -29,6 +29,13 @@ module Rqb::Cli
         SvgConv: :svg_conv,
       }.each { |k, v| autoload(k, "#{__dir__}/cli/commands/shared/#{v}") }
     end
+
+    # Module for concerns.
+    module Concerns
+      {
+        SvgConvert: :svg_convert,
+      }.each { |k, v| autoload(k, "#{__dir__}/cli/commands/concerns/#{v}") }
+    end
   end
 
   # Namespace for base (abstract) commands
