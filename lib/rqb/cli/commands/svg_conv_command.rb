@@ -4,6 +4,8 @@ require_relative '../app'
 
 # Convert svg to pdf
 class Rqb::Cli::Commands::SvgConvCommand < Rqb::Cli::Base::BaseCommand
+  include ::Rqb::Cli::Commands::Concerns::SvgConvert
+
   parameter('SOURCE', 'filepath without extension', { attribute_name: :param_source })
   option('--[no-]debug', :flag, 'enable debug messages', { default: true })
 
@@ -15,7 +17,7 @@ class Rqb::Cli::Commands::SvgConvCommand < Rqb::Cli::Base::BaseCommand
   #   @return [String]
 
   def execute
-    converter.call(input_file)
+    svg_convert(input_file)
   end
 
   # Determines target file from parent param_file (which is probably not an actual file).
@@ -29,12 +31,5 @@ class Rqb::Cli::Commands::SvgConvCommand < Rqb::Cli::Base::BaseCommand
 
       Pathname.new(given_file).realpath
     end
-  end
-
-  protected
-
-  # @return [Rqb::Cli::Commands::Shared::SvgConv]
-  def converter
-    Rqb::Cli::Commands::Shared::SvgConv.new(debug: debug?, tmpdir: tmpdir)
   end
 end
