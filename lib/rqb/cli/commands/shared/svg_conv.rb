@@ -5,7 +5,7 @@ require_relative '../../app'
 # Wrapper build on top of convert. Convert svg to pdf.
 #
 # Output is cached and compared by original file md5sum.
-class Rqb::Cli::Commands::Shared::SvgConv
+class Rqb::Cli::Commands::Shared::SvgConv # rubocop:disable Metrics/ClassLength
   autoload(:Digest, 'digest')
   autoload(:Pathname, 'pathname')
   autoload(:FileUtils, 'fileutils')
@@ -13,10 +13,12 @@ class Rqb::Cli::Commands::Shared::SvgConv
   autoload(:JSON, 'json')
   autoload(:Shellwords, 'shellwords')
 
-  def initialize(debug: true, tmpdir: nil)
+  def initialize(debug: true, tmpdir: nil, cache: true)
     self.tap do
       # noinspection RubySimplifyBooleanInspection
       self.debug = !!debug
+      # noinspection RubySimplifyBooleanInspection
+      self.cache = !!cache
       self.tmpdir = tmpdir || lambda do
         require 'tmpdir'
 
@@ -27,6 +29,13 @@ class Rqb::Cli::Commands::Shared::SvgConv
 
   def debug?
     !!self.debug
+  end
+
+  # Denotes cache will be used (when present) and generated.
+  #
+  # @return [Boolean]
+  def cache?
+    !!self.cache
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
@@ -75,7 +84,7 @@ class Rqb::Cli::Commands::Shared::SvgConv
   def call(origin)
     target = self.target(origin)
 
-    if target.cached?
+    if self.cache? && target.cached?
       target.output.tap do |output_file|
         output_file.write(Base64.decode64(target.cache.data))
 
@@ -89,10 +98,8 @@ class Rqb::Cli::Commands::Shared::SvgConv
         target: target.to_s,
         checksum: target.checksum,
         data: Base64.encode64(output_file.read).lines.map(&:strip),
-      }.tap do |payload|
-        fs.mkdir_p(tmpdir)
-        fs.touch(target.cache_file)
-        target.cache_file.write(JSON.pretty_generate(payload))
+      }.then do |payload|
+        write_cache(target.cache_file, payload)
       end
     end
   end
@@ -101,11 +108,18 @@ class Rqb::Cli::Commands::Shared::SvgConv
 
   protected
 
+  # @api private
+  #
   # @return [Boolean]
   attr_accessor :debug
 
   # @return [Pathname]
   attr_accessor :tmpdir
+
+  # @api private
+  #
+  # @return [Boolean]
+  attr_accessor :cache
 
   def convert_command_builder
     lambda do |input_file, output_file|
@@ -129,6 +143,8 @@ class Rqb::Cli::Commands::Shared::SvgConv
     end
   end
 
+  # Gets cache file path related to given path.
+  #
   # @param [String, Pathname] filepath
   #
   # @return [Pathname]
@@ -139,6 +155,18 @@ class Rqb::Cli::Commands::Shared::SvgConv
       Digest::SHA1.hexdigest(filepath.to_s),
       'json'
     ].then { |parts| tmpdir.join(parts.join('.')) }
+  end
+
+  # @param [Pathname] cache_file
+  # @param [Hash] payload
+  #
+  # @return [FalseClass, Integer]
+  def write_cache(cache_file, payload)
+    return false unless cache?
+
+    fs.mkdir_p(cache_file.dirname)
+    fs.touch(cache_file)
+    cache_file.write(JSON.pretty_generate(payload))
   end
 
   # @return [Module<FileUtils>, Module<FileUtils::Verbose>]
