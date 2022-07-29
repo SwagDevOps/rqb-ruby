@@ -27,16 +27,8 @@ class Rqb::Cli::Commands::ChaptersCommand < Rqb::Cli::Base::ErbCommand
 
   # File used to process chapters.
   #
-  # Input file SHOULD:
-  #
-  #  * have the ``.yml`` extension.
-  #  * or have no extension
-  #  * or be a directory
-  #
   # @return [Pathname]
   def input_file
-    return source.join("#{template_name}.yml") if source.directory?
-
     Pathname.new("#{source.to_s.gsub(/\.yml$/, '')}.yml").freeze
   end
 
