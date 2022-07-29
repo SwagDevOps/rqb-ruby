@@ -8,11 +8,14 @@ class Rqb::Cli::Base::ErbCommand::Output
   autoload(:Pathname, 'pathname')
 
   # @param [String] basepath
+  # @param [String] name
+  # @param [Array<String>, nil] tags
   # @param [Boolean] verbose
-  def initialize(basepath, name, verbose: true)
+  def initialize(basepath, name, tags: nil, verbose: true)
     self.tap do
-      self.basepath = basepath
-      self.name = name
+      self.basepath = basepath.freeze
+      self.name = name.freeze
+      self.tags = (tags || []).map(&:to_s).reject(&:empty?).freeze
       # noinspection RubySimplifyBooleanInspection
       self.verbose = !!verbose
     end.freeze
@@ -37,6 +40,13 @@ class Rqb::Cli::Base::ErbCommand::Output
   # @type [String]
   attr_accessor :name
 
+  # Words added to the file.
+  #
+  # @return [Array<String>]
+  #
+  # @see #file
+  attr_accessor :tags
+
   # @type [Boolean]
   attr_accessor :verbose
 
@@ -44,7 +54,11 @@ class Rqb::Cli::Base::ErbCommand::Output
   #
   # @return [Pathname]
   def file
-    [basepath, "erb-#{name}", 'tex'].join('.').then { |fp| Pathname.new(fp) }
+    [basepath, "erb-#{name}"]
+      .concat(tags)
+      .concat(['tex'])
+      .join('.')
+      .then { |fp| Pathname.new(fp) }
   end
 
   # @return [Module<FileUtils::Verbose>, Module<FileUtils>]

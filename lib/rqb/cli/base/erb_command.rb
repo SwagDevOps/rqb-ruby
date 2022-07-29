@@ -25,6 +25,7 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Base::BaseCommand
         subclass.class_eval do
           parameter('SOURCE', 'source file (or directory)', { attribute_name: :param_source })
           option('--[no-]debug', :flag, 'enable debug messages', { default: true })
+          option('--tags', 'TAGS', 'tags (comma separated tags)', { attribute_name: :param_tags })
           option(%w[-O --output], 'OUTPUT',
                  "output type {#{OutputType.types.join('|')}}",
                  {
@@ -34,6 +35,7 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Base::BaseCommand
         end
       end
     end
+
     # rubocop:enable Metrics/MethodLength
   end
 
@@ -41,7 +43,10 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Base::BaseCommand
   #   Denotes debug is active
   #   @return [Boolean]
 
-  # @!attribute [rw] param_output
+  # @!attribute [r] param_output
+  #   @return [String]
+
+  # @!attribute [r] param_tags
   #   @return [String]
 
   # Get variables.
@@ -100,7 +105,15 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Base::BaseCommand
   #
   # @return [Output]
   def output
-    Output.new(output_basepath, template_name, verbose: debug?)
+    Output.new(output_basepath, template_name, tags: output_tags, verbose: debug?)
+  end
+
+  # @return [Array<String>]
+  def output_tags
+    (self.param_tags || '')
+      .split(/,\s*/)
+      .reject { |v| ['', nil].include?(v) }
+      .freeze
   end
 
   # Path used to output file (almost a filepath).
