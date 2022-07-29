@@ -35,6 +35,7 @@ module Rqb::Cli
     module Concerns
       {
         SvgConvert: :svg_convert,
+        ImageMatch: :image_match,
       }.each { |k, v| autoload(k, "#{__dir__}/cli/commands/concerns/#{v}") }
     end
   end
