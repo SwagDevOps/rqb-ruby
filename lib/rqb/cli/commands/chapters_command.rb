@@ -38,7 +38,7 @@ class Rqb::Cli::Commands::ChaptersCommand < Rqb::Cli::Base::ErbCommand
   #
   # @return [Pathname]
   def texfiles_basedir
-    input_file.expand_path.dirname.join(options.fetch(:basedir))
+    input_file.dirname.join(options.fetch(:basedir))
   end
 
   # Load YAML file.

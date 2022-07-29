@@ -61,7 +61,7 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Base::BaseCommand
     @param_source.then do |fp|
       raise '@param_source must be set' if [nil, ''].include?(fp)
 
-      Pathname.new(fp).expand_path
+      Pathname.new(fp)
     end
   end
 
