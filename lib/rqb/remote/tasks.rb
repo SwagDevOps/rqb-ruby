@@ -97,4 +97,11 @@ end
 desc 'Synchronize build directory from sources'
 task :sync do
   Rqb::Remote::Synchro.new(path.configure(:src_dir), path.configure(:tex_dir)).call
+
+  # add stuff related to bundle -----------------------------------------------
+  %w[gems.rb gems.locked vendor .bundle].map do |filename|
+    Pathname.new(ENV.fetch('WORKDIR')).join(filename).realpath.to_s
+  end.sort.then do |files|
+    Rqb::Shell::Command.new(%w[ln -sfr].concat(files).concat([path.configure(:tex_dir).expand_path.to_s])).call
+  end
 end
