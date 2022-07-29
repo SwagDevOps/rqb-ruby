@@ -27,6 +27,7 @@ module Rqb::Cli
     module Shared
       {
         SvgConv: :svg_conv,
+        FilesMatcher: :files_matcher,
       }.each { |k, v| autoload(k, "#{__dir__}/cli/commands/shared/#{v}") }
     end
 
