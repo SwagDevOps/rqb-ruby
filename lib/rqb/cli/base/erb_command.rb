@@ -50,7 +50,7 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Base::BaseCommand
   #
   # @return [Hash{Symbol => Object}]
   def variables
-    {}
+    {}.merge(variables_builder&.call || {})
   end
 
   # Get file (or directory) given to be processed.
@@ -84,6 +84,13 @@ class Rqb::Cli::Base::ErbCommand < Rqb::Cli::Base::BaseCommand
   end
 
   protected
+
+  # Generates variables at runtime.
+  #
+  # @return [Proc, nil]
+  def variables_builder
+    nil
+  end
 
   def rouge
     Rouge.new
