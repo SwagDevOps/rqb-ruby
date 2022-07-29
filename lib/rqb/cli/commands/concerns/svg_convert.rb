@@ -23,12 +23,15 @@ module Rqb::Cli::Commands::Concerns::SvgConvert
   #
   # @return [Rqb::Cli::Commands::Shared::SvgConv]
   def svg_converter
+    Rqb::Cli::Commands::Shared::SvgConv.new(**svg_converter_options)
+  end
+
+  # @return [Hash{Symbol => Object}]
+  def svg_converter_options
     {
       cache: self.respond_to?(:cache?, true) ? self.__send__(:cache?) : true,
       debug: self.respond_to?(:debug?, true) ? self.__send__(:debug?) : false,
       tmpdir: self.respond_to?(:tmpdir, true) ? self.__send__(:tmpdir) : nil,
-    }.then do |kwargs|
-      Rqb::Cli::Commands::Shared::SvgConv.new(**kwargs)
-    end
+    }
   end
 end
