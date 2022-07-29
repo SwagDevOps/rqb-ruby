@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.bindir        = "bin"
   s.executables   = [
+    "aldine",
     "erb-chapters",
     "erb-hyperref_setup",
     "erb-image_full",
@@ -28,6 +29,7 @@ Gem::Specification.new do |s|
   s.files         = [
     ".yardopts",
     "README.md",
+    "bin/aldine",
     "bin/erb-chapters",
     "bin/erb-hyperref_setup",
     "bin/erb-image_full",
@@ -39,10 +41,27 @@ Gem::Specification.new do |s|
     "lib/rqb/bundleable.rb",
     "lib/rqb/cli.rb",
     "lib/rqb/cli/app.rb",
+    "lib/rqb/cli/app/loader.rb",
+    "lib/rqb/cli/app/loader/parser.rb",
+    "lib/rqb/cli/base/base_command.rb",
+    "lib/rqb/cli/base/erb_command.rb",
+    "lib/rqb/cli/base/erb_command/output.rb",
+    "lib/rqb/cli/base/erb_command/output_type.rb",
+    "lib/rqb/cli/base/erb_command/rouge.rb",
+    "lib/rqb/cli/base/erb_command/template.rb",
+    "lib/rqb/cli/commands/chapters_command.rb",
+    "lib/rqb/cli/commands/concerns/image_match.rb",
+    "lib/rqb/cli/commands/concerns/svg_convert.rb",
+    "lib/rqb/cli/commands/miniature_command.rb",
+    "lib/rqb/cli/commands/sample_command.rb",
+    "lib/rqb/cli/commands/shared/files_matcher.rb",
+    "lib/rqb/cli/commands/shared/svg_conv.rb",
+    "lib/rqb/cli/commands/svg_conv_command.rb",
     "lib/rqb/cli/erb.rb",
     "lib/rqb/cli/erb_chapters.rb",
     "lib/rqb/cli/erb_hyperref_setup.rb",
     "lib/rqb/cli/erb_image_full.rb",
+    "lib/rqb/cli/legacy_app.rb",
     "lib/rqb/cli/svg2pdf.rb",
     "lib/rqb/local.rb",
     "lib/rqb/local/config.rb",
@@ -65,8 +84,12 @@ Gem::Specification.new do |s|
     "lib/rqb/version.yml",
   ]
 
+  s.add_runtime_dependency("clamp", ["~> 1.3"])
+  s.add_runtime_dependency("faker", ["~> 2.21"])
   s.add_runtime_dependency("kamaze-version", ["~> 1.0"])
+  s.add_runtime_dependency("rouge", ["~> 3.29"])
   s.add_runtime_dependency("stibium-bundled", ["~> 0.0", ">= 0.0.4"])
+  s.add_runtime_dependency("yard", ["~> 0.9"])
 end
 
 # Local Variables:
