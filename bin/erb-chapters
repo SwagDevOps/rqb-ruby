@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/rqb'
+require_relative '../lib/aldine'
 
 # Sample of use:
 #
@@ -10,4 +10,4 @@ require_relative '../lib/rqb'
 # ```
 #
 # Given filepath is a filepath without extension (extension will be ``yml``)
-Rqb::Cli::ErbChapters.new.call
+Aldine::Cli::ErbChapters.new.call
