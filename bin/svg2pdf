@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/rqb'
+require_relative '../lib/aldine'
 
-Rqb::Cli::Svg2Pdf.new.call
+Aldine::Cli::Svg2Pdf.new.call

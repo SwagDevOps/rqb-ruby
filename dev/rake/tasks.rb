@@ -15,8 +15,8 @@ require 'kamaze/project'
   'sources:license',
 ].then do |tasks|
   Kamaze.project do |project|
-    project.subject = Rqb
-    project.name = 'rqb'
+    project.subject = Aldine
+    project.name = 'aldine'
     project.tasks = tasks
   end.load!
 end

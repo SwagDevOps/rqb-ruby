@@ -14,7 +14,7 @@ bundle install --standalone
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'rqb/local/tasks'
+require 'aldine/local/tasks'
 ```
 
 ### ``./src/Rakefile``
@@ -23,5 +23,5 @@ require 'rqb/local/tasks'
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'rqb/remote/tasks'
+require 'aldine/remote/tasks'
 ```

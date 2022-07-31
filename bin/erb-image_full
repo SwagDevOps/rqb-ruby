@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/rqb'
+require_relative '../lib/aldine'
 
 # Create markup for all full-page image.
 #
@@ -17,4 +17,4 @@ require_relative '../lib/rqb'
 # ```
 #
 # @todo use svg2pdf from the main program instead of depending on erb template.
-Rqb::Cli::ErbImageFull.new.call
+Aldine::Cli::ErbImageFull.new.call

@@ -2,7 +2,7 @@
 
 if project.path('spec').directory?
   task :spec do |_, args|
-    # @rtype [Rake::Task] task
+    # @type [Rake::Task] task
     Rake::Task[:test].then { |task| task.invoke(*args.to_a) }
   end
 end
